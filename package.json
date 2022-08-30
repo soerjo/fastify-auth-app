@@ -1,0 +1,25 @@
+{
+  "name": "fast-auth-app",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "nodemon",
+    "build": "tsc",
+    "start": "node ./dist/index"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/mysql": "^2.15.21",
+    "typescript": "^4.8.2"
+  },
+  "dependencies": {
+    "@fastify/cors": "^8.1.0",
+    "dotenv": "^16.0.1",
+    "fastify": "^4.5.3",
+    "mysql": "^2.18.1",
+    "nodemon": "^2.0.19",
+    "ts-node": "^10.9.1"
+  }
+}
