@@ -1,6 +1,12 @@
 import { FastifyReply, FastifyRequest } from "fastify";
 import { execQuery } from "../../configs/db_mysql";
+import { server_config } from "../../configs/config";
+import { sendMail } from "../nodemailer/mailing.service";
+import { ForgotPasswordReqDto } from "./dto/forgotpassword.dto";
+import { ResetPasswordReqDto } from "./dto/resetpassword.dto";
+import { SigninReqDto } from "./dto/signin.dto";
 import { SignupReqDto } from "./dto/signup.dto";
+import { ActivateUserReqDto } from "./dto/activateuser.dto";
 
 interface ObjectReturnData {
   status: {
@@ -94,7 +100,22 @@ const signup = async (
       objReturnData.status.id = response[0].resultid;
       objReturnData.status.index = response[0].resultindex;
 
-      if (response.length) objReturnData.result = response[1];
+      if (response.length) {
+        const { verificationcode, ...returnresponsedata } = response[1];
+        objReturnData.result = returnresponsedata;
+        const usernameresponse = response[1].username;
+        const useremail = response[1].useremail;
+        const bodyEmail = `<p>hi <b>${usernameresponse}</b>, this is your link to activate account:</p><a href="${server_config.server_url}/api/users/activateuser/${verificationcode}">${server_config.server_url}/api/users/activateuser/${verificationcode}</a>`;
+        sendMail({
+          reciever: useremail,
+          body: bodyEmail,
+          subject: "Email confirmation",
+        });
+
+        objReturnData.result = {
+          verificationcode: response[1].verificationcode,
+        };
+      }
     }
   } catch (error) {
     objReturnData = {
@@ -113,8 +134,8 @@ const signup = async (
   reply.status(200).send(objReturnData);
 };
 
-const signin = async (
-  req: FastifyRequest<SignupReqDto>,
+const activateUser = async (
+  req: FastifyRequest<ActivateUserReqDto>,
   reply: FastifyReply
 ) => {
   let objReturnData: ObjectReturnData = {
@@ -126,6 +147,62 @@ const signin = async (
       index: "",
     },
   };
+
+  try {
+    let verificationcode = "";
+    if (objReturnData.status.status) {
+      if (!req.params.token) {
+        objReturnData.status.status = 0;
+        objReturnData.status.code = "055555";
+        objReturnData.status.errormessage = "! verificationcode";
+      } else {
+        verificationcode = req.params.token;
+      }
+    }
+
+    if (objReturnData.status.status) {
+      let response = await execQuery("CALL spactivateuser(?)", [
+        verificationcode,
+      ]);
+
+      objReturnData.status.status = response[0].resultstatus;
+      objReturnData.status.code = response[0].resultcode;
+      objReturnData.status.errormessage = response[0].resulterrormessage;
+      objReturnData.status.id = response[0].resultid;
+      objReturnData.status.index = response[0].resultindex;
+    }
+  } catch (error) {
+    objReturnData = {
+      status: {
+        status: 0,
+        code: "059999",
+        errormessage: "",
+        id: 0,
+        index: "",
+      },
+    };
+
+    console.log(error);
+  }
+
+  reply.redirect(server_config.client_url);
+};
+
+const signin = async (
+  req: FastifyRequest<SigninReqDto>,
+  reply: FastifyReply
+) => {
+  let objReturnData: ObjectReturnData = {
+    status: {
+      status: 1,
+      code: "0800000",
+      errormessage: "",
+      id: 0,
+      index: "",
+    },
+  };
+
+  console.log("====> body", req.body);
 
   try {
     if (objReturnData.status.status) {
@@ -190,7 +267,7 @@ const signin = async (
 };
 
 const forgotPassword = async (
-  req: FastifyRequest<SignupReqDto>,
+  req: FastifyRequest<ForgotPasswordReqDto>,
   reply: FastifyReply
 ) => {
   let objReturnData: ObjectReturnData = {
@@ -223,18 +300,26 @@ const forgotPassword = async (
       }
     }
 
-    console.log("the data sended: ", { username });
     if (objReturnData.status.status) {
-      let response = await execQuery("CALL spforgotpassword(?,?)", [username]);
+      let response = await execQuery("CALL spforgotpassword(?)", [username]);
 
-      console.log("log query: ", response);
-      // objReturnData.status.status = response[0].resultstatus;
-      // objReturnData.status.code = response[0].resultcode;
-      // objReturnData.status.errormessage = response[0].resulterrormessage;
-      // objReturnData.status.id = response[0].resultid;
-      // objReturnData.status.index = response[0].resultindex;
+      objReturnData.status.status = response[0].resultstatus;
+      objReturnData.status.code = response[0].resultcode;
+      objReturnData.status.errormessage = response[0].resulterrormessage;
+      objReturnData.status.id = response[0].resultid;
+      objReturnData.status.index = response[0].resultindex;
 
-      // if (response.length) objReturnData.result = response[1];
+      const verificationcode = response[1].verificationcode;
+      const useremail = response[1].useremail;
+
+      const bodyEmail = `<p>this is your link to reset your password:</p><a href="${server_config.client_url}/${verificationcode}">${server_config.client_url}/${verificationcode}</a>`;
+      sendMail({
+        reciever: useremail,
+        body: bodyEmail,
+        subject: "Request Change Password",
+      });
+
+      objReturnData.result = { verificationcode: response[1].verificationcode };
     }
   } catch (error) {
     objReturnData = {
@@ -253,10 +338,78 @@ const forgotPassword = async (
   reply.status(200).send(objReturnData);
 };
 
-const resetPassword = async (req: FastifyRequest, rep: FastifyReply) => {
-  const body = req.body;
-  console.log(body);
-  return { response: body };
+const resetPassword = async (
+  req: FastifyRequest<ResetPasswordReqDto>,
+  reply: FastifyReply
+) => {
+  let objReturnData: ObjectReturnData = {
+    status: {
+      status: 1,
+      code: "0800000",
+      errormessage: "",
+      id: 0,
+      index: "",
+    },
+  };
+
+  try {
+    if (objReturnData.status.status) {
+      if (req.body == null) {
+        objReturnData.status.status = 0;
+        objReturnData.status.code = "055555";
+        objReturnData.status.errormessage = "Body NULL";
+      }
+    }
+
+    let verificationcode = "";
+    if (objReturnData.status.status) {
+      if (!req.body.verificationcode) {
+        objReturnData.status.status = 0;
+        objReturnData.status.code = "055555";
+        objReturnData.status.errormessage = "! verificationcode";
+      } else {
+        verificationcode = req.body.verificationcode;
+      }
+    }
+
+    let newpassword = "";
+    if (objReturnData.status.status) {
+      if (!req.body.newpassword) {
+        objReturnData.status.status = 0;
+        objReturnData.status.code = "055555";
+        objReturnData.status.errormessage = "! newpassword";
+      } else {
+        newpassword = req.body.newpassword;
+      }
+    }
+
+    if (objReturnData.status.status) {
+      let response = await execQuery("CALL spresetpassword(?,?)", [
+        verificationcode,
+        newpassword,
+      ]);
+
+      objReturnData.status.status = response[0].resultstatus;
+      objReturnData.status.code = response[0].resultcode;
+      objReturnData.status.errormessage = response[0].resulterrormessage;
+      objReturnData.status.id = response[0].resultid;
+      objReturnData.status.index = response[0].resultindex;
+    }
+  } catch (error) {
+    objReturnData = {
+      status: {
+        status: 0,
+        code: "059999",
+        errormessage: "",
+        id: 0,
+        index: "",
+      },
+    };
+
+    console.log(error);
+  }
+
+  reply.status(200).send(objReturnData);
 };
 
-export default { signin, signup, resetPassword, forgotPassword };
+export default { signin, signup, resetPassword, forgotPassword, activateUser };
