@@ -1,18 +1,39 @@
 import { FastifyInstance } from "fastify";
 import userController from "./user.controller";
-import { signupMiddleware } from "./user.middleware";
+import userMiddleware from "./user.middleware";
 
 async function userRoutes(server: FastifyInstance) {
   server.post("/", () => ({ response: "ok from users route" }));
+
   server.post(
     "/signup",
-    { preHandler: [signupMiddleware] },
+    { preHandler: [userMiddleware.signupMiddleware] },
     userController.signup
   );
-  server.post("/signin", {}, userController.signin);
-  server.post("/forgotpassword", {}, userController.forgotPassword);
-  server.post("/resetpassword", {}, userController.resetPassword);
-  server.get("/activateuser/:token", {}, userController.activateUser);
+
+  server.post(
+    "/signin",
+    { preHandler: [userMiddleware.signinMiddleware] },
+    userController.signin
+  );
+
+  server.post(
+    "/forgotpassword",
+    { preHandler: [userMiddleware.forgotPasswordMiddleware] },
+    userController.forgotPassword
+  );
+
+  server.post(
+    "/resetpassword",
+    { preHandler: [userMiddleware.resetPasswordMiddleware] },
+    userController.resetPassword
+  );
+
+  server.get(
+    "/activateuser/:token",
+    { preHandler: [userMiddleware.activateMiddleware] },
+    userController.activateUser
+  );
 }
 
 export default userRoutes;

@@ -1,16 +1,19 @@
 import { FastifyError, FastifyReply, FastifyRequest } from "fastify";
+import { ActivateUserReqDto } from "./dto/activateuser.dto";
+import { ForgotPasswordReqDto } from "./dto/forgotpassword.dto";
+import { ResetPasswordReqDto } from "./dto/resetpassword.dto";
+import { SigninReqDto } from "./dto/signin.dto";
 import { SignupReqDto } from "./dto/signup.dto";
 
-interface ObjectReturnData {
+let objReturnData = {
   status: {
-    status: number;
-    code: string;
-    errormessage: string;
-    id: number;
-    index: string;
-  };
-  result?: Object;
-}
+    status: 1,
+    code: "0800000",
+    errormessage: "",
+    id: 0,
+    index: "",
+  },
+};
 
 export const signupMiddleware = (
   req: FastifyRequest<SignupReqDto>,
@@ -18,15 +21,6 @@ export const signupMiddleware = (
   done: (err?: FastifyError) => void
 ) => {
   console.log("execute Middelware");
-  let objReturnData: ObjectReturnData = {
-    status: {
-      status: 1,
-      code: "0800000",
-      errormessage: "",
-      id: 0,
-      index: "",
-    },
-  };
 
   if (objReturnData.status.status) {
     if (req.body == null) {
@@ -36,51 +30,154 @@ export const signupMiddleware = (
     }
   }
 
-  let username = "";
   if (objReturnData.status.status) {
     if (!req.body.username) {
       objReturnData.status.status = 0;
       objReturnData.status.code = "055555";
       objReturnData.status.errormessage = "! username";
-    } else {
-      username = req.body.username;
     }
   }
 
-  let password = "";
   if (objReturnData.status.status) {
     if (!req.body.password) {
       objReturnData.status.status = 0;
       objReturnData.status.code = "055555";
       objReturnData.status.errormessage = "! password";
-    } else {
-      password = req.body.password;
     }
   }
 
-  let fullname = "";
   if (objReturnData.status.status) {
     if (!req.body.fullname) {
       objReturnData.status.status = 0;
       objReturnData.status.code = "055555";
       objReturnData.status.errormessage = "! fullname";
-    } else {
-      fullname = req.body.fullname;
     }
   }
 
-  let email = "";
   if (objReturnData.status.status) {
     if (!req.body.email) {
       objReturnData.status.status = 0;
       objReturnData.status.code = "055555";
       objReturnData.status.errormessage = "! email";
-    } else {
-      email = req.body.email;
     }
   }
 
   if (!objReturnData.status.status) res.status(200).send(objReturnData);
-
   done();
+};
+
+export const activateMiddleware = (
+  req: FastifyRequest<ActivateUserReqDto>,
+  res: FastifyReply,
+  done: (err?: FastifyError) => void
+) => {
+  if (objReturnData.status.status) {
+    if (!req.params.token) {
+      objReturnData.status.status = 0;
+      objReturnData.status.code = "055555";
+      objReturnData.status.errormessage = "! verificationcode";
+    }
+  }
+
+  if (!objReturnData.status.status) res.status(200).send(objReturnData);
+  done();
+};
+
+export const signinMiddleware = (
+  req: FastifyRequest<SigninReqDto>,
+  res: FastifyReply,
+  done: (err?: FastifyError) => void
+) => {
+  if (objReturnData.status.status) {
+    if (req.body == null) {
+      objReturnData.status.status = 0;
+      objReturnData.status.code = "055555";
+      objReturnData.status.errormessage = "Body NULL";
+    }
+  }
+
+  if (objReturnData.status.status) {
+    if (!req.body.username) {
+      objReturnData.status.status = 0;
+      objReturnData.status.code = "055555";
+      objReturnData.status.errormessage = "! username";
+    }
+  }
+
+  if (objReturnData.status.status) {
+    if (!req.body.password) {
+      objReturnData.status.status = 0;
+      objReturnData.status.code = "055555";
+      objReturnData.status.errormessage = "! password";
+    }
+  }
+
+  if (!objReturnData.status.status) res.status(200).send(objReturnData);
+  done();
+};
+
+export const forgotPasswordMiddleware = (
+  req: FastifyRequest<ForgotPasswordReqDto>,
+  res: FastifyReply,
+  done: (err?: FastifyError) => void
+) => {
+  if (objReturnData.status.status) {
+    if (req.body == null) {
+      objReturnData.status.status = 0;
+      objReturnData.status.code = "055555";
+      objReturnData.status.errormessage = "Body NULL";
+    }
+  }
+
+  if (objReturnData.status.status) {
+    if (!req.body.username) {
+      objReturnData.status.status = 0;
+      objReturnData.status.code = "055555";
+      objReturnData.status.errormessage = "! username";
+    }
+  }
+
+  if (!objReturnData.status.status) res.status(200).send(objReturnData);
+  done();
+};
+
+export const resetPasswordMiddleware = (
+  req: FastifyRequest<ResetPasswordReqDto>,
+  res: FastifyReply,
+  done: (err?: FastifyError) => void
+) => {
+  if (objReturnData.status.status) {
+    if (req.body == null) {
+      objReturnData.status.status = 0;
+      objReturnData.status.code = "055555";
+      objReturnData.status.errormessage = "Body NULL";
+    }
+  }
+
+  if (objReturnData.status.status) {
+    if (!req.body.verificationcode) {
+      objReturnData.status.status = 0;
+      objReturnData.status.code = "055555";
+      objReturnData.status.errormessage = "! verificationcode";
+    }
+  }
+
+  if (objReturnData.status.status) {
+    if (!req.body.newpassword) {
+      objReturnData.status.status = 0;
+      objReturnData.status.code = "055555";
+      objReturnData.status.errormessage = "! newpassword";
+    }
+  }
+
+  if (!objReturnData.status.status) res.status(200).send(objReturnData);
+  done();
+};
+
+export default {
+  signupMiddleware,
+  signinMiddleware,
+  activateMiddleware,
+  forgotPasswordMiddleware,
+  resetPasswordMiddleware,
 };

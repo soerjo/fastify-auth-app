@@ -34,88 +34,34 @@ const signup = async (
   };
 
   try {
-    // if (objReturnData.status.status) {
-    //   if (req.body == null) {
-    //     objReturnData.status.status = 0;
-    //     objReturnData.status.code = "055555";
-    //     objReturnData.status.errormessage = "Body NULL";
-    //   }
-    // }
+    let response = await execQuery("CALL spsignup(?,?,?,?)", [
+      req.body.username,
+      req.body.fullname,
+      req.body.email,
+      req.body.password,
+    ]);
 
-    // let username = "";
-    // if (objReturnData.status.status) {
-    //   if (!req.body.username) {
-    //     objReturnData.status.status = 0;
-    //     objReturnData.status.code = "055555";
-    //     objReturnData.status.errormessage = "! username";
-    //   } else {
-    //     username = req.body.username;
-    //   }
-    // }
+    objReturnData.status.status = response[0].resultstatus;
+    objReturnData.status.code = response[0].resultcode;
+    objReturnData.status.errormessage = response[0].resulterrormessage;
+    objReturnData.status.id = response[0].resultid;
+    objReturnData.status.index = response[0].resultindex;
 
-    // let password = "";
-    // if (objReturnData.status.status) {
-    //   if (!req.body.password) {
-    //     objReturnData.status.status = 0;
-    //     objReturnData.status.code = "055555";
-    //     objReturnData.status.errormessage = "! password";
-    //   } else {
-    //     password = req.body.password;
-    //   }
-    // }
+    if (response.length) {
+      const { verificationcode, ...returnresponsedata } = response[1];
+      objReturnData.result = returnresponsedata;
+      const usernameresponse = response[1].username;
+      const useremail = response[1].useremail;
+      const bodyEmail = `<p>hi <b>${usernameresponse}</b>, this is your link to activate account:</p><a href="${server_config.server_url}/api/users/activateuser/${verificationcode}">${server_config.server_url}/api/users/activateuser/${verificationcode}</a>`;
+      sendMail({
+        reciever: useremail,
+        body: bodyEmail,
+        subject: "Email confirmation",
+      });
 
-    // let fullname = "";
-    // if (objReturnData.status.status) {
-    //   if (!req.body.fullname) {
-    //     objReturnData.status.status = 0;
-    //     objReturnData.status.code = "055555";
-    //     objReturnData.status.errormessage = "! fullname";
-    //   } else {
-    //     fullname = req.body.fullname;
-    //   }
-    // }
-
-    // let email = "";
-    // if (objReturnData.status.status) {
-    //   if (!req.body.email) {
-    //     objReturnData.status.status = 0;
-    //     objReturnData.status.code = "055555";
-    //     objReturnData.status.errormessage = "! email";
-    //   } else {
-    //     email = req.body.email;
-    //   }
-    // }
-
-    if (objReturnData.status.status) {
-      let response = await execQuery("CALL spsignup(?,?,?,?)", [
-        req.body.username,
-        req.body.fullname,
-        req.body.email,
-        req.body.password,
-      ]);
-
-      objReturnData.status.status = response[0].resultstatus;
-      objReturnData.status.code = response[0].resultcode;
-      objReturnData.status.errormessage = response[0].resulterrormessage;
-      objReturnData.status.id = response[0].resultid;
-      objReturnData.status.index = response[0].resultindex;
-
-      if (response.length) {
-        const { verificationcode, ...returnresponsedata } = response[1];
-        objReturnData.result = returnresponsedata;
-        const usernameresponse = response[1].username;
-        const useremail = response[1].useremail;
-        const bodyEmail = `<p>hi <b>${usernameresponse}</b>, this is your link to activate account:</p><a href="${server_config.server_url}/api/users/activateuser/${verificationcode}">${server_config.server_url}/api/users/activateuser/${verificationcode}</a>`;
-        sendMail({
-          reciever: useremail,
-          body: bodyEmail,
-          subject: "Email confirmation",
-        });
-
-        objReturnData.result = {
-          verificationcode: response[1].verificationcode,
-        };
-      }
+      objReturnData.result = {
+        verificationcode: response[1].verificationcode,
+      };
     }
   } catch (error) {
     objReturnData = {
@@ -149,28 +95,15 @@ const activateUser = async (
   };
 
   try {
-    let verificationcode = "";
-    if (objReturnData.status.status) {
-      if (!req.params.token) {
-        objReturnData.status.status = 0;
-        objReturnData.status.code = "055555";
-        objReturnData.status.errormessage = "! verificationcode";
-      } else {
-        verificationcode = req.params.token;
-      }
-    }
+    let response = await execQuery("CALL spactivateuser(?)", [
+      req.params.token,
+    ]);
 
-    if (objReturnData.status.status) {
-      let response = await execQuery("CALL spactivateuser(?)", [
-        verificationcode,
-      ]);
-
-      objReturnData.status.status = response[0].resultstatus;
-      objReturnData.status.code = response[0].resultcode;
-      objReturnData.status.errormessage = response[0].resulterrormessage;
-      objReturnData.status.id = response[0].resultid;
-      objReturnData.status.index = response[0].resultindex;
-    }
+    objReturnData.status.status = response[0].resultstatus;
+    objReturnData.status.code = response[0].resultcode;
+    objReturnData.status.errormessage = response[0].resulterrormessage;
+    objReturnData.status.id = response[0].resultid;
+    objReturnData.status.index = response[0].resultindex;
   } catch (error) {
     objReturnData = {
       status: {
@@ -202,53 +135,19 @@ const signin = async (
     },
   };
 
-  console.log("====> body", req.body);
-
   try {
-    if (objReturnData.status.status) {
-      if (req.body == null) {
-        objReturnData.status.status = 0;
-        objReturnData.status.code = "055555";
-        objReturnData.status.errormessage = "Body NULL";
-      }
-    }
+    let response = await execQuery("CALL spsignin(?,?)", [
+      req.body.username,
+      req.body.password,
+    ]);
 
-    let username = "";
-    if (objReturnData.status.status) {
-      if (!req.body.username) {
-        objReturnData.status.status = 0;
-        objReturnData.status.code = "055555";
-        objReturnData.status.errormessage = "! username";
-      } else {
-        username = req.body.username;
-      }
-    }
+    objReturnData.status.status = response[0].resultstatus;
+    objReturnData.status.code = response[0].resultcode;
+    objReturnData.status.errormessage = response[0].resulterrormessage;
+    objReturnData.status.id = response[0].resultid;
+    objReturnData.status.index = response[0].resultindex;
 
-    let password = "";
-    if (objReturnData.status.status) {
-      if (!req.body.password) {
-        objReturnData.status.status = 0;
-        objReturnData.status.code = "055555";
-        objReturnData.status.errormessage = "! password";
-      } else {
-        password = req.body.password;
-      }
-    }
-
-    if (objReturnData.status.status) {
-      let response = await execQuery("CALL spsignin(?,?)", [
-        username,
-        password,
-      ]);
-
-      objReturnData.status.status = response[0].resultstatus;
-      objReturnData.status.code = response[0].resultcode;
-      objReturnData.status.errormessage = response[0].resulterrormessage;
-      objReturnData.status.id = response[0].resultid;
-      objReturnData.status.index = response[0].resultindex;
-
-      if (response.length) objReturnData.result = response[1];
-    }
+    if (response.length) objReturnData.result = response[1];
   } catch (error) {
     objReturnData = {
       status: {
@@ -281,46 +180,27 @@ const forgotPassword = async (
   };
 
   try {
-    if (objReturnData.status.status) {
-      if (req.body == null) {
-        objReturnData.status.status = 0;
-        objReturnData.status.code = "055555";
-        objReturnData.status.errormessage = "Body NULL";
-      }
-    }
+    let response = await execQuery("CALL spforgotpassword(?)", [
+      req.body.username,
+    ]);
 
-    let username = "";
-    if (objReturnData.status.status) {
-      if (!req.body.username) {
-        objReturnData.status.status = 0;
-        objReturnData.status.code = "055555";
-        objReturnData.status.errormessage = "! username";
-      } else {
-        username = req.body.username;
-      }
-    }
+    objReturnData.status.status = response[0].resultstatus;
+    objReturnData.status.code = response[0].resultcode;
+    objReturnData.status.errormessage = response[0].resulterrormessage;
+    objReturnData.status.id = response[0].resultid;
+    objReturnData.status.index = response[0].resultindex;
 
-    if (objReturnData.status.status) {
-      let response = await execQuery("CALL spforgotpassword(?)", [username]);
+    const verificationcode = response[1].verificationcode;
+    const useremail = response[1].useremail;
 
-      objReturnData.status.status = response[0].resultstatus;
-      objReturnData.status.code = response[0].resultcode;
-      objReturnData.status.errormessage = response[0].resulterrormessage;
-      objReturnData.status.id = response[0].resultid;
-      objReturnData.status.index = response[0].resultindex;
+    const bodyEmail = `<p>this is your link to reset your password:</p><a href="${server_config.client_url}/${verificationcode}">${server_config.client_url}/${verificationcode}</a>`;
+    sendMail({
+      reciever: useremail,
+      body: bodyEmail,
+      subject: "Request Change Password",
+    });
 
-      const verificationcode = response[1].verificationcode;
-      const useremail = response[1].useremail;
-
-      const bodyEmail = `<p>this is your link to reset your password:</p><a href="${server_config.client_url}/${verificationcode}">${server_config.client_url}/${verificationcode}</a>`;
-      sendMail({
-        reciever: useremail,
-        body: bodyEmail,
-        subject: "Request Change Password",
-      });
-
-      objReturnData.result = { verificationcode: response[1].verificationcode };
-    }
+    objReturnData.result = { verificationcode: response[1].verificationcode };
   } catch (error) {
     objReturnData = {
       status: {
@@ -353,48 +233,16 @@ const resetPassword = async (
   };
 
   try {
-    if (objReturnData.status.status) {
-      if (req.body == null) {
-        objReturnData.status.status = 0;
-        objReturnData.status.code = "055555";
-        objReturnData.status.errormessage = "Body NULL";
-      }
-    }
+    let response = await execQuery("CALL spresetpassword(?,?)", [
+      req.body.verificationcode,
+      req.body.newpassword,
+    ]);
 
-    let verificationcode = "";
-    if (objReturnData.status.status) {
-      if (!req.body.verificationcode) {
-        objReturnData.status.status = 0;
-        objReturnData.status.code = "055555";
-        objReturnData.status.errormessage = "! verificationcode";
-      } else {
-        verificationcode = req.body.verificationcode;
-      }
-    }
-
-    let newpassword = "";
-    if (objReturnData.status.status) {
-      if (!req.body.newpassword) {
-        objReturnData.status.status = 0;
-        objReturnData.status.code = "055555";
-        objReturnData.status.errormessage = "! newpassword";
-      } else {
-        newpassword = req.body.newpassword;
-      }
-    }
-
-    if (objReturnData.status.status) {
-      let response = await execQuery("CALL spresetpassword(?,?)", [
-        verificationcode,
-        newpassword,
-      ]);
-
-      objReturnData.status.status = response[0].resultstatus;
-      objReturnData.status.code = response[0].resultcode;
-      objReturnData.status.errormessage = response[0].resulterrormessage;
-      objReturnData.status.id = response[0].resultid;
-      objReturnData.status.index = response[0].resultindex;
-    }
+    objReturnData.status.status = response[0].resultstatus;
+    objReturnData.status.code = response[0].resultcode;
+    objReturnData.status.errormessage = response[0].resulterrormessage;
+    objReturnData.status.id = response[0].resultid;
+    objReturnData.status.index = response[0].resultindex;
   } catch (error) {
     objReturnData = {
       status: {
