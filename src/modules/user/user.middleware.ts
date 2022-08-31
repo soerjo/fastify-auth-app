@@ -63,6 +63,7 @@ const signupMiddleware = (
   }
 
   if (!objReturnData.status.status) res.status(200).send(objReturnData);
+  done();
 };
 
 const activateMiddleware = (
@@ -79,6 +80,7 @@ const activateMiddleware = (
   }
 
   if (!objReturnData.status.status) res.status(200).send(objReturnData);
+  done();
 };
 
 const signinMiddleware = (
@@ -111,6 +113,7 @@ const signinMiddleware = (
   }
 
   if (!objReturnData.status.status) res.status(200).send(objReturnData);
+  done();
 };
 
 const forgotPasswordMiddleware = (
@@ -135,6 +138,7 @@ const forgotPasswordMiddleware = (
   }
 
   if (!objReturnData.status.status) res.status(200).send(objReturnData);
+  done();
 };
 
 const resetPasswordMiddleware = (
@@ -167,6 +171,7 @@ const resetPasswordMiddleware = (
   }
 
   if (!objReturnData.status.status) res.status(200).send(objReturnData);
+  done();
 };
 
 export default {
