@@ -34,64 +34,64 @@ const signup = async (
   };
 
   try {
-    if (objReturnData.status.status) {
-      if (req.body == null) {
-        objReturnData.status.status = 0;
-        objReturnData.status.code = "055555";
-        objReturnData.status.errormessage = "Body NULL";
-      }
-    }
+    // if (objReturnData.status.status) {
+    //   if (req.body == null) {
+    //     objReturnData.status.status = 0;
+    //     objReturnData.status.code = "055555";
+    //     objReturnData.status.errormessage = "Body NULL";
+    //   }
+    // }
 
-    let username = "";
-    if (objReturnData.status.status) {
-      if (!req.body.username) {
-        objReturnData.status.status = 0;
-        objReturnData.status.code = "055555";
-        objReturnData.status.errormessage = "! username";
-      } else {
-        username = req.body.username;
-      }
-    }
+    // let username = "";
+    // if (objReturnData.status.status) {
+    //   if (!req.body.username) {
+    //     objReturnData.status.status = 0;
+    //     objReturnData.status.code = "055555";
+    //     objReturnData.status.errormessage = "! username";
+    //   } else {
+    //     username = req.body.username;
+    //   }
+    // }
 
-    let password = "";
-    if (objReturnData.status.status) {
-      if (!req.body.password) {
-        objReturnData.status.status = 0;
-        objReturnData.status.code = "055555";
-        objReturnData.status.errormessage = "! password";
-      } else {
-        password = req.body.password;
-      }
-    }
+    // let password = "";
+    // if (objReturnData.status.status) {
+    //   if (!req.body.password) {
+    //     objReturnData.status.status = 0;
+    //     objReturnData.status.code = "055555";
+    //     objReturnData.status.errormessage = "! password";
+    //   } else {
+    //     password = req.body.password;
+    //   }
+    // }
 
-    let fullname = "";
-    if (objReturnData.status.status) {
-      if (!req.body.fullname) {
-        objReturnData.status.status = 0;
-        objReturnData.status.code = "055555";
-        objReturnData.status.errormessage = "! fullname";
-      } else {
-        fullname = req.body.fullname;
-      }
-    }
+    // let fullname = "";
+    // if (objReturnData.status.status) {
+    //   if (!req.body.fullname) {
+    //     objReturnData.status.status = 0;
+    //     objReturnData.status.code = "055555";
+    //     objReturnData.status.errormessage = "! fullname";
+    //   } else {
+    //     fullname = req.body.fullname;
+    //   }
+    // }
 
-    let email = "";
-    if (objReturnData.status.status) {
-      if (!req.body.email) {
-        objReturnData.status.status = 0;
-        objReturnData.status.code = "055555";
-        objReturnData.status.errormessage = "! email";
-      } else {
-        email = req.body.email;
-      }
-    }
+    // let email = "";
+    // if (objReturnData.status.status) {
+    //   if (!req.body.email) {
+    //     objReturnData.status.status = 0;
+    //     objReturnData.status.code = "055555";
+    //     objReturnData.status.errormessage = "! email";
+    //   } else {
+    //     email = req.body.email;
+    //   }
+    // }
 
     if (objReturnData.status.status) {
       let response = await execQuery("CALL spsignup(?,?,?,?)", [
-        username,
-        fullname,
-        email,
-        password,
+        req.body.username,
+        req.body.fullname,
+        req.body.email,
+        req.body.password,
       ]);
 
       objReturnData.status.status = response[0].resultstatus;
