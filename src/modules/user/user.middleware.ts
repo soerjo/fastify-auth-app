@@ -15,7 +15,7 @@ let objReturnData = {
   },
 };
 
-export const signupMiddleware = (
+const signupMiddleware = (
   req: FastifyRequest<SignupReqDto>,
   res: FastifyReply,
   done: (err?: FastifyError) => void
@@ -66,7 +66,7 @@ export const signupMiddleware = (
   done();
 };
 
-export const activateMiddleware = (
+const activateMiddleware = (
   req: FastifyRequest<ActivateUserReqDto>,
   res: FastifyReply,
   done: (err?: FastifyError) => void
@@ -83,7 +83,7 @@ export const activateMiddleware = (
   done();
 };
 
-export const signinMiddleware = (
+const signinMiddleware = (
   req: FastifyRequest<SigninReqDto>,
   res: FastifyReply,
   done: (err?: FastifyError) => void
@@ -116,7 +116,7 @@ export const signinMiddleware = (
   done();
 };
 
-export const forgotPasswordMiddleware = (
+const forgotPasswordMiddleware = (
   req: FastifyRequest<ForgotPasswordReqDto>,
   res: FastifyReply,
   done: (err?: FastifyError) => void
@@ -141,7 +141,7 @@ export const forgotPasswordMiddleware = (
   done();
 };
 
-export const resetPasswordMiddleware = (
+const resetPasswordMiddleware = (
   req: FastifyRequest<ResetPasswordReqDto>,
   res: FastifyReply,
   done: (err?: FastifyError) => void
