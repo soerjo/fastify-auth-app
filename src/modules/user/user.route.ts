@@ -7,31 +7,31 @@ async function userRoutes(server: FastifyInstance) {
 
   server.post(
     "/signup",
-    { preHandler: [userMiddleware.signupMiddleware] },
+    { preValidation: [userMiddleware.signupMiddleware] },
     userController.signup
   );
 
   server.post(
     "/signin",
-    { preHandler: [userMiddleware.signinMiddleware] },
+    { preValidation: [userMiddleware.signinMiddleware] },
     userController.signin
   );
 
   server.post(
     "/forgotpassword",
-    { preHandler: [userMiddleware.forgotPasswordMiddleware] },
+    { preValidation: [userMiddleware.forgotPasswordMiddleware] },
     userController.forgotPassword
   );
 
   server.post(
     "/resetpassword",
-    { preHandler: [userMiddleware.resetPasswordMiddleware] },
+    { preValidation: [userMiddleware.resetPasswordMiddleware] },
     userController.resetPassword
   );
 
   server.get(
     "/activateuser/:token",
-    { preHandler: [userMiddleware.activateMiddleware] },
+    { preValidation: [userMiddleware.activateMiddleware] },
     userController.activateUser
   );
 }
