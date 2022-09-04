@@ -10,8 +10,8 @@ const db = mysql.createConnection({
 });
 
 export async function dbConnection() {
-  return new Promise<void>(res => {
-    db.connect(err => {
+  return new Promise<void>((res) => {
+    db.connect((err) => {
       if (err) {
         console.log(err);
         process.exit(1);

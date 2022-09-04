@@ -3,35 +3,41 @@ import userController from "./user.controller";
 import userMiddleware from "./user.middleware";
 
 async function userRoutes(server: FastifyInstance) {
-  server.post("/", () => ({ response: "ok from users route" }));
+  server.get("/", () => ({ response: "ok from users route" }));
 
   server.post(
     "/signup",
-    { preValidation: [userMiddleware.signupMiddleware] },
+    { preValidation: userMiddleware.signupMiddleware },
     userController.signup
   );
 
   server.post(
     "/signin",
-    { preValidation: [userMiddleware.signinMiddleware] },
+    { preValidation: userMiddleware.signinMiddleware },
     userController.signin
   );
 
   server.post(
     "/forgotpassword",
-    { preValidation: [userMiddleware.forgotPasswordMiddleware] },
+    { preValidation: userMiddleware.forgotPasswordMiddleware },
     userController.forgotPassword
   );
 
   server.post(
     "/resetpassword",
-    { preValidation: [userMiddleware.resetPasswordMiddleware] },
+    { preValidation: userMiddleware.resetPasswordMiddleware },
     userController.resetPassword
+  );
+
+  server.post(
+    "/logout",
+    { preValidation: userMiddleware.logoutMiddleware },
+    userController.logout
   );
 
   server.get(
     "/activateuser/:token",
-    { preValidation: [userMiddleware.activateMiddleware] },
+    { preValidation: userMiddleware.activateMiddleware },
     userController.activateUser
   );
 }

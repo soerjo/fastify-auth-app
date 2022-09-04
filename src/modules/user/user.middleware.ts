@@ -1,26 +1,25 @@
 import { FastifyError, FastifyReply, FastifyRequest } from "fastify";
 import { ActivateUserReqDto } from "./dto/activateuser.dto";
 import { ForgotPasswordReqDto } from "./dto/forgotpassword.dto";
+import { LogoutReqDto } from "./dto/logout.dto";
 import { ResetPasswordReqDto } from "./dto/resetpassword.dto";
 import { SigninReqDto } from "./dto/signin.dto";
 import { SignupReqDto } from "./dto/signup.dto";
-
-let objReturnData = {
-  status: {
-    status: 1,
-    code: "0800000",
-    errormessage: "",
-    id: 0,
-    index: "",
-  },
-};
 
 const signupMiddleware = (
   req: FastifyRequest<SignupReqDto>,
   res: FastifyReply,
   done: (err?: FastifyError) => void
 ) => {
-  console.log("execute Middelware");
+  const objReturnData = {
+    status: {
+      status: 1,
+      code: "0800000",
+      errormessage: "",
+      id: 0,
+      index: "",
+    },
+  };
 
   if (objReturnData.status.status) {
     if (req.body == null) {
@@ -71,6 +70,16 @@ const activateMiddleware = (
   res: FastifyReply,
   done: (err?: FastifyError) => void
 ) => {
+  const objReturnData = {
+    status: {
+      status: 1,
+      code: "0800000",
+      errormessage: "",
+      id: 0,
+      index: "",
+    },
+  };
+
   if (objReturnData.status.status) {
     if (!req.params.token) {
       objReturnData.status.status = 0;
@@ -88,6 +97,16 @@ const signinMiddleware = (
   res: FastifyReply,
   done: (err?: FastifyError) => void
 ) => {
+  const objReturnData = {
+    status: {
+      status: 1,
+      code: "0800000",
+      errormessage: "",
+      id: 0,
+      index: "",
+    },
+  };
+
   if (objReturnData.status.status) {
     if (req.body == null) {
       objReturnData.status.status = 0;
@@ -121,6 +140,16 @@ const forgotPasswordMiddleware = (
   res: FastifyReply,
   done: (err?: FastifyError) => void
 ) => {
+  const objReturnData = {
+    status: {
+      status: 1,
+      code: "0800000",
+      errormessage: "",
+      id: 0,
+      index: "",
+    },
+  };
+
   if (objReturnData.status.status) {
     if (req.body == null) {
       objReturnData.status.status = 0;
@@ -146,6 +175,16 @@ const resetPasswordMiddleware = (
   res: FastifyReply,
   done: (err?: FastifyError) => void
 ) => {
+  const objReturnData = {
+    status: {
+      status: 1,
+      code: "0800000",
+      errormessage: "",
+      id: 0,
+      index: "",
+    },
+  };
+
   if (objReturnData.status.status) {
     if (req.body == null) {
       objReturnData.status.status = 0;
@@ -174,10 +213,38 @@ const resetPasswordMiddleware = (
   done();
 };
 
+const logoutMiddleware = (
+  req: FastifyRequest<LogoutReqDto>,
+  res: FastifyReply,
+  done: (err?: FastifyError) => void
+) => {
+  const objReturnData = {
+    status: {
+      status: 1,
+      code: "0800000",
+      errormessage: "",
+      id: 0,
+      index: "",
+    },
+  };
+
+  if (objReturnData.status.status) {
+    if (!req.body.token) {
+      objReturnData.status.status = 0;
+      objReturnData.status.code = "055555";
+      objReturnData.status.errormessage = "! token";
+    }
+  }
+
+  if (!objReturnData.status.status) res.status(200).send(objReturnData);
+  done();
+};
+
 export default {
   signupMiddleware,
   signinMiddleware,
   activateMiddleware,
   forgotPasswordMiddleware,
   resetPasswordMiddleware,
+  logoutMiddleware,
 };
