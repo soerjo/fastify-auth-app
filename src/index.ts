@@ -13,7 +13,7 @@ const fastify = Fastify();
 fastify.register(cors, { origin: "*" });
 
 // ROUTE
-fastify.register(productRoutes, { prefix: "/api/products" });
+fastify.register(productRoutes, { prefix: "/api/produk" });
 fastify.register(userRoutes, { prefix: "/api/users" });
 fastify.get("/", () => ({ response: "ok" }));
 

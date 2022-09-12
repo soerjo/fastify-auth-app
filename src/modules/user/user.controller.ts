@@ -1,9 +1,5 @@
 import { FastifyReply, FastifyRequest } from "fastify";
-
 import { execQuery } from "../../configs/db_mysql";
-import { server_config } from "../../configs/config";
-
-import { sendMail } from "../nodemailer/mailing.service";
 
 import { SigninReqDto } from "./dto/signin.dto";
 import { SignupReqDto } from "./dto/signup.dto";
@@ -12,16 +8,7 @@ import { ResetPasswordReqDto } from "./dto/resetpassword.dto";
 import { ActivateUserReqDto } from "./dto/activateuser.dto";
 import { LogoutDto, LogoutReqDto } from "./dto/logout.dto";
 
-interface ObjectReturnData {
-  status: {
-    status: number;
-    code: string;
-    errormessage: string;
-    id: number;
-    index: string;
-  };
-  result?: Object;
-}
+import { ObjectReturnData } from "../../common/type/objectResponseData";
 
 const signup = async (
   req: FastifyRequest<SignupReqDto>,
@@ -63,7 +50,7 @@ const signup = async (
       // });
 
       // For development =============
-      objReturnData.result = { verificationcode };
+      // objReturnData.result = { verificationcode };
       // =============================
     }
   } catch (error) {

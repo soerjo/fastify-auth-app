@@ -14,26 +14,49 @@ export async function dbConnection() {
     db.connect((err) => {
       if (err) {
         console.log(err);
-        process.exit(1);
+        setTimeout(dbConnection, 2000);
       }
       console.log("connected do db success...");
       res();
+    });
+
+    db.on("error", (err) => {
+      console.log("db error: ", err);
+      if (err.code === "PROTOCOL_CONNECTION_LOST") {
+        dbConnection();
+      } else {
+        process.exit(1);
+      }
     });
   });
 }
 
 export function execQuery(
   query: string,
-  params: Array<any>
+  params?: Array<any>
 ): Promise<Array<any>> {
   return new Promise<Array<any>>((resolve, reject) => {
     try {
       db.query(query, params, (err, data) => {
         if (err) reject(err);
-        let StringifyData = JSON.stringify(data);
-        let ObjectData = JSON.parse(StringifyData);
-        ObjectData.pop();
-        resolve(ObjectData.map((obj: Array<any>) => obj[0]));
+        resolve(data.map((obj: Array<any>) => obj[0]));
+      });
+    } catch (err) {
+      console.log("error query", err);
+      reject(err);
+    }
+  });
+}
+
+export function justQuery(
+  query: string,
+  params?: Array<any>
+): Promise<Array<any>> {
+  return new Promise<Array<any>>((resolve, reject) => {
+    try {
+      db.query(query, params, (err, data) => {
+        if (err) reject(err);
+        resolve(data);
       });
     } catch (err) {
       console.log("error query", err);

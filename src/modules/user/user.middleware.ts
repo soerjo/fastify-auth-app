@@ -46,6 +46,22 @@ const signupMiddleware = (
   }
 
   if (objReturnData.status.status) {
+    if (!req.body.confirmpassword) {
+      objReturnData.status.status = 0;
+      objReturnData.status.code = "055555";
+      objReturnData.status.errormessage = "! confirmpassword";
+    }
+  }
+
+  if (objReturnData.status.status) {
+    if (req.body.confirmpassword != req.body.password) {
+      objReturnData.status.status = 0;
+      objReturnData.status.code = "055555";
+      objReturnData.status.errormessage = "! your password is not same";
+    }
+  }
+
+  if (objReturnData.status.status) {
     if (!req.body.fullname) {
       objReturnData.status.status = 0;
       objReturnData.status.code = "055555";
